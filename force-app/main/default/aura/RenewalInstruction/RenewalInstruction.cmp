@@ -1,0 +1,69 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes"
+                access="global" >
+    
+    
+    <aura:attribute name="myVal" type="String" />
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    
+    <div aura:id="output" class="slds-box editor slds-text-longform">
+        <p /> <div class="slds-text-heading_medium">
+         <b>PLEASE READ BEFORE COMPLETEING THE RENEWAL:&nbsp;</b><br />
+		 
+		 <b>Deadlines:</b> 
+		 <ul>
+			<li>First Deadline: January 17th</li>
+			<li> Final Deadline: Jaunary 31st</li>
+		</ul>
+		 If you miss these deadlines, you will not be eligible for a stipend this semester! <p />
+  <b>ENTERING COURSE DATA</b> <br />
+  Please use your transcript to input your course history in this section for the terms
+  of Summer 2019 &amp; Fall 2019 (if applicable)<b>.</b><br />
+  <br />
+  All data will be reviewed so you must submit your course, credit, and grade information
+  exactly as it is stated on your transcript.&nbsp;<br />
+  <ul>
+    <li>Include course history for <b style="word-spacing: normal;">ALL</b> <span style=
+    "word-spacing: normal;">courses listed on your transcript for Spring 2019 &amp; Fall
+    2018 (if applicable).</span></li>
+
+    <li>You must include courses that you withdrew from if they are listed on your
+    transcript.<br /></li>
+
+    <li>You must include courses you took as Pass/Fail or Credit/No Credit.</li>
+  </ul><span>We use transcript and grade information to support Scholars in their
+  academic achievement, but also in targeting students for internship and fellowship
+  opportunities. Since different universities use varying scales for weighing grades, we
+  attempt to understand each student's GPA using some of the language listed
+  below.</span>
+    <ul>
+      <li><span><b>GPA Credit Hours =</b> All hours for which any grade of A, B, C, or D
+      were earned. May be listed on your transcript as "Workload Units", "Units", "Credit
+      Hours."</span></li>
+
+      <li><span><b>Quality Points =</b> This is the sum of GPA Hours multiplied by the
+      course grade GPA.<br />
+      For example:&nbsp; you received a B (a 3.0) in a course that was 3 credit hours,
+      which would yield 9.0 Quality Points. May be listed on your transcript as "GPA
+      Points."</span></li>
+
+      <li>
+        <ul>
+          <li><span><i>If your transcript does not have quality
+          points listed, please refer to your college registrar's office, which will have
+          a GPA calculator. </i></span></li>
+        </ul>
+      </li>
+
+      <li><span><b>GPA =</b> Quality points divided by GPA Credit Hours.</span></li>
+
+      <li><span><b>Earned Hours =</b> All hours for which a grade of A, B, C, D, or P
+      (Pass/Credit) were earned.</span></li>
+
+      <li><span><b>Attempted Hours =</b> All hours for which a student was registered at
+      the end of the Drop/Add; includes hours for withdrawn courses.</span></li>
+    </ul>
+
+            <img src="//www.tfaforms.com/forms/get_image/124936/ySMqmEhPlcOxMjgpunr1fTMfPH86cnZR4o1yNpaCpcNIHJioNUD5uUqCeLNq0MvM-2018-06-2513_40_03-servlet.FileDownload.png" alt="Sample Transcript" style="max-width: 100%;" />
+    </div>  </div>
+    
+</aura:component>

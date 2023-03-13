@@ -1,0 +1,24 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+                access="global" 
+                >
+    <aura:attribute name="tabId" type="String" default="3"/>
+    
+    <aura:handler name="change" value="{!v.tabId}" action="{!c.handleChange}"/>
+    
+    <lightning:tabset aura:id="tabs" selectedTabId="{!v.tabId}">
+        
+        <lightning:tab label="RENEWAL INSTRUCTIONS" id="3">
+            <c:RenewalInstruction />
+        </lightning:tab>
+        
+        <lightning:tab label="COMPLETE YOUR RENEWAL" id="2"> 
+            <c:ScholatRenewalLink />
+        </lightning:tab>
+        
+        <lightning:tab label="RENEWAL STATUS " id="1">
+            <c:RenewalHistory />
+        </lightning:tab>
+        
+        
+    </lightning:tabset>
+</aura:component>

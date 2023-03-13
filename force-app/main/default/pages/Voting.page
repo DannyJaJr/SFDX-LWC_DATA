@@ -1,0 +1,622 @@
+<apex:page controller="VotingController" standardStylesheets="false" lightningStylesheets="true"
+    sidebar="false" applyBodyTag="false" docType="html-5.0">
+   <style>
+       .message {
+            background-color: #f3f2f2 !important;
+            border-style: none !important;
+            border-width: 1px !important;
+            color: #fdf7f7 !important;
+            padding: 6px 8px 6px 6px !important;
+            margin: 4px 20px !important;
+        }
+   </style>
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+        lang="en">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge" />
+        <title>Voting</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <apex:slds />
+        <style>
+            .activeTab {
+                background-color: #236FBD;
+                color: white;
+                background-image: none;
+                font-size: 11pt;
+            }
+            
+            .inactiveTab {
+                background-color: lightgrey;
+                color: black;
+                background-image: none;
+                font-size: 11pt;
+            }
+            
+            .slds-scope .slds-button {
+                white-space: nowrap !important;
+            }
+            
+            .borderclass {
+                border: 1px solid lightgray;
+                padding-top: 15px;
+                padding-bottom: 15px;
+            }
+            
+            .rightborder {
+                border-right: 1px solid lightgray;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+        <div class="slds-scope">
+            <apex:form id="formid">
+                <div class="slds-scope" id="assignment_area" style="width: 75%;margin-left: 10%;">
+                    <div class="slds-panel__header" id="assignment_area">
+                        <h2 class="slds-panel__header-title slds-text-heading_small slds-truncate" style="font-weight: 700;"
+                            title="">
+                            <apex:outputPanel layout="none" rendered="{!NOT(votingEnabled)}">
+                                Application voting is currently closed.
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!votingEnabled}">
+                                {!votingFor}.
+                            </apex:outputPanel>
+                        </h2>
+                    </div>
+                    <br/>
+                    <apex:outputPanel id="everything" >
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col  slds-size_5-of-12">
+                                <div class="slds-panel__header" id="assignment_area">
+                                    <h2 class="slds-panel__header-title slds-text-heading_small slds-truncate" style="font-weight: 700;"
+                                        title="Awaiting Review">
+                                        Awaiting Review
+                                    </h2>
+                                </div>
+                                <br/>
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control tabbedspace" style="overflow-y: auto;max-height: 200px;">
+                                        <table class="slds-table slds-table_cell-buffer slds-table_bordered" DIR="LTR">
+                                            <tbody>
+                                                <apex:repeat value="{!openVotes}" var="o">
+                                                    <tr class="slds-hint-parent">
+                                                        <td>
+                                                            <apex:commandLink action="{!updateScholar}" value="{!o.Scholar__r.Contact__r.Name}">
+                                                                <apex:param name="sid" value="{!o.Scholar__c}" />
+                                                                <apex:param name="currentVote" value="{!o.Id}" />
+                                                            </apex:commandLink>
+                                                        </td>
+                                                        <td>
+                                                            <apex:outputLabel value="{!o.Score__c}" />
+                                                        </td>
+                                                    </tr>
+                                                </apex:repeat>
+                                            </tbody>
+                                        </table>
+
+                                        <apex:outputPanel rendered="{!openVotes.size = 0}" layout="none">
+                                            <p>You have no applications awaiting review.</p>
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col  slds-size_2-of-12">
+                                <span></span>
+                            </div>
+                            <div class="slds-col  slds-size_5-of-12 ">
+                                <div class="slds-panel__header" id="assignment_area">
+                                    <h2 class="slds-panel__header-title slds-text-heading_small slds-truncate" style="font-weight: 700;"
+                                        title="Previously Scored">
+                                        Previously Scored
+                                    </h2>
+                                </div>
+                                <br/>
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control tabbedspace" style="overflow-y: auto;max-height: 200px;">
+                                        <apex:outputPanel layout="none" id="doneVotes">
+                                        <table class="slds-table slds-table_cell-buffer slds-table_bordered" DIR="LTR">
+                                            <tbody>
+                                                <apex:repeat value="{!doneVotes}" var="d">
+                                                    <tr class="slds-hint-parent">
+                                                        <td>
+                                                            <apex:commandLink action="{!updateScholar}" value="{!d.Scholar__r.Contact__r.Name}">
+                                                                <apex:param name="sid" value="{!d.Scholar__c}" />
+                                                                <apex:param name="currentVote" value="{!d.Id}" />
+                                                            </apex:commandLink>
+                                                        </td>
+                                                        <td>
+                                                            <apex:outputLabel value="{!d.Score__c}" />
+                                                        </td>
+                                                    </tr>
+                                                </apex:repeat>
+                                            </tbody>
+                                        </table>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel rendered="{!IsBlank(doneVotes)}" layout="none">
+                                            <p>You have not reviewed any pending applications.</p>
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <apex:pageMessages />
+                        <br/>
+                        <apex:outputPanel rendered="{!scholar != null}" layout="none">
+                            <div class="slds-grid slds-gutters  borderclass">
+                                <div class="slds-col  slds-size_9-of-12 rightborder ">
+                                    <apex:outputPanel layout="none" rendered="{!currentVote != null}">
+                                        <div class="slds-grid slds-gutters">
+                                            <div class="slds-col  slds-size_1-of-2">
+                                                <div class="slds-grid slds-gutters">
+                                                    <div class="slds-col  slds-size_3-of-12">
+                                                        <h4 class="slds-panel__header-title" style="font-weight: 700;">
+                                                            <label class="slds-form-element__label" style="font-size: 16px;">Applicant: </label>
+                                                        </h4>
+                                                    </div>
+                                                    <div class="slds-col  slds-size_1-of-12"></div>
+                                                    <div class="slds-col  slds-size_6-of-12" style="font-size: 16px;font-weight: 700;">
+                                                       <label class="slds-form-element__label" style="font-size: 16px;"> <apex:outputText value="{!currentVote.Scholar__r.Contact__r.Name}" /></label>
+                                                    </div>
+                                                    <div class="slds-col  slds-size_2-of-12"></div>
+                                                </div>
+
+                                            </div>
+                                            <div class="slds-col  slds-size_1-of-2">
+                                                <div class="slds-grid slds-gutters">
+                                                    <div class="slds-col  slds-size_3-of-12">
+                                                        <label class="slds-form-element__label">Score: </label>
+                                                    </div>
+                                                    <div class="slds-col  slds-size_1-of-12"></div>
+                                                    <div class="slds-col  slds-size_6-of-12">
+                                                        <apex:selectList size="1" value="{!currentVote.Score__c}" style="width: 50%;">
+                                                            <apex:selectOption itemLabel="0" itemvalue="0"></apex:selectOption>
+                                                            <apex:selectOption itemLabel="1" itemvalue="1"></apex:selectOption>
+                                                            <apex:selectOption itemLabel="2" itemvalue="2"></apex:selectOption>
+                                                            <apex:selectOption itemLabel="3" itemvalue="3"></apex:selectOption>
+                                                            <apex:selectOption itemLabel="4" itemvalue="4"></apex:selectOption>
+                                                            <apex:selectOption itemLabel="5" itemvalue="5"></apex:selectOption>
+                                                        </apex:selectList>
+                                                    </div>
+                                                    <div class="slds-col  slds-size_2-of-12"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-grid slds-gutters">
+                                            <div class="slds-col  slds-size_1-of-2">
+                                                <div class="slds-grid slds-gutters">
+                                                    <div class="slds-col  slds-size_3-of-12">
+                                                        <label class="slds-form-element__label">Region: </label>
+                                                    </div>
+                                                    <div class="slds-col  slds-size_1-of-12"></div>
+                                                    <div class="slds-col  slds-size_6-of-12">
+                                                        <apex:outputText value="{!currentVote.Scholar__r.Contact__r.Region__c}" />  - &nbsp;                                                       
+                                                        <apex:outputText value="{!currentVote.Scholar__r.C4G_Contact_City_and_State__c}" />                                                      
+
+                                                    </div>
+                                                    <div class="slds-col  slds-size_2-of-12"></div>
+                                                </div>
+
+                                            </div>
+                                            <div class="slds-col  slds-size_1-of-2">
+                                                <div class="slds-grid slds-gutters">
+                                                    <div class="slds-col  slds-size_3-of-12">
+                                                        <label class="slds-form-element__label" style="width: max-content;">Special Case: </label>
+                                                    </div>
+                                                    <div class="slds-col  slds-size_1-of-12"></div>
+                                                    <div class="slds-col  slds-size_6-of-12">
+                                                        <apex:inputField value="{!currentVote.Special_Case__c}" />
+                                                    </div>
+                                                    <div class="slds-col  slds-size_2-of-12"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-grid slds-gutters">
+                                            <div class="slds-col  slds-size_1-of-2">
+                                                <div class="slds-grid slds-gutters">
+                                                    <div class="slds-col  slds-size_3-of-12">
+                                                        <label class="slds-form-element__label">Ethnicity/Race: </label>
+                                                    </div>
+                                                    <div class="slds-col  slds-size_1-of-12"></div>
+                                                    <div class="slds-col  slds-size_6-of-12">
+                                                        <apex:outputText value="{!currentVote.Scholar__r.Ethnicity_Race_Text__c}"
+                                                        />
+                                                    </div>
+                                                    <div class="slds-col  slds-size_2-of-12"></div>
+                                                </div>
+                                                <div class="slds-grid slds-gutters">
+                                                    <div class="slds-col  slds-size_3-of-12">
+                                                        <label class="slds-form-element__label">Gender: </label>
+                                                    </div>
+                                                    <div class="slds-col  slds-size_1-of-12"></div>
+                                                    <div class="slds-col  slds-size_6-of-12">
+                                                        <apex:outputText value="{!currentVote.Scholar__r.Contact__r.Gender__c}" />
+                                                    </div>
+                                                    <div class="slds-col  slds-size_2-of-12"></div>
+                                                </div>
+                                                <div class="slds-grid slds-gutters">
+                                                    <div class="slds-col  slds-size_3-of-12">
+                                                        <label class="slds-form-element__label">Income: </label>
+                                                    </div>
+                                                    <div class="slds-col  slds-size_1-of-12"></div>
+                                                    <div class="slds-col  slds-size_6-of-12">
+                                                        <apex:outputText value="{0, number, $###,###,###,###.00}">
+                                                            <apex:param value="{!currentVote.Scholar__r.Family_Income__c}" />
+                                                        </apex:outputText>
+                                                    </div>
+                                                    <div class="slds-col  slds-size_2-of-12"></div>
+                                                </div>
+
+                                            </div>
+                                            <div class="slds-col  slds-size_1-of-2">
+                                                <label class="slds-form-element__label">Notes: </label>
+                                                <apex:inputField value="{!currentVote.Comment__c}" styleclass="slds-input" style="width: 100%; height: 60px; vertical-align: top;"
+                                                />
+                                            </div>
+                                        </div>
+                                        <br/><br/>
+                                        <apex:commandButton value="Save" action="{!castVote}" rendered="{!NOT(scholar == null)}"
+                                              styleClass="slds-button slds-button_brand"  reRender="everything" />
+                                    </apex:outputPanel>
+                                    <br/><br/>
+                                    <div class="slds-grid slds-gutters" style="border-top: 1px solid lightgray;">
+                                        <div class="slds-col  slds-size_1-of-1">
+
+                                            <script>
+                                                function viewtabdetail(
+                                                    varvalint) {
+                                                    var element1 = document.getElementById(
+                                                        "viewtab1");
+                                                    var element2 = document.getElementById(
+                                                        "viewtab2");
+                                                    var element3 = document.getElementById(
+                                                        "viewtab3");
+                                                    var element4 = document.getElementById(
+                                                        "viewtab4");
+                                                    var sh1 = document.getElementById(
+                                                        "tab-default-1");
+                                                    var sh2 = document.getElementById(
+                                                        "tab-default-2");
+                                                    var sh3 = document.getElementById(
+                                                        "tab-default-3");
+                                                    var sh4 = document.getElementById(
+                                                        "tab-default-4");
+                                                    element1.className =
+                                                        'slds-tabs_default__item';
+                                                    element2.className =
+                                                        'slds-tabs_default__item';
+                                                    element3.className =
+                                                        'slds-tabs_default__item';
+                                                    element4.className =
+                                                        'slds-tabs_default__item';
+                                                    sh1.className =
+                                                        'slds-tabs_default__content slds-hide';
+                                                    sh2.className =
+                                                        'slds-tabs_default__content slds-hide';
+                                                    sh3.className =
+                                                        'slds-tabs_default__content slds-hide';
+                                                    sh4.className =
+                                                        'slds-tabs_default__content slds-hide';
+                                                    if (varvalint === 'tab1') {
+                                                        element1.className =
+                                                            'slds-tabs_default__item slds-is-active';
+                                                        sh1.className =
+                                                            'slds-tabs_default__content slds-show';
+
+                                                    } else if (varvalint ==
+                                                        'tab2') {
+                                                        element2.className =
+                                                            'slds-tabs_default__item slds-is-active';
+                                                        sh2.className =
+                                                            'slds-tabs_default__content slds-show';
+                                                    } else if (varvalint ==
+                                                        'tab3') {
+                                                        element3.className =
+                                                            'slds-tabs_default__item slds-is-active';
+                                                        sh3.className =
+                                                            'slds-tabs_default__content slds-show';
+                                                    } else if (varvalint ==
+                                                        'tab4') {
+                                                        element4.className =
+                                                            'slds-tabs_default__item slds-is-active';
+                                                        sh4.className =
+                                                            'slds-tabs_default__content slds-show';
+                                                    }
+                                                }
+
+                                            </script>
+                                            <!-- Tab Layout -->
+
+                                            <div class="slds-tabs_default">
+                                                <ul class="slds-tabs_default__nav" role="tablist">
+                                                    <li class="slds-tabs_default__item slds-is-active" title="Academics" id="viewtab1"
+                                                        role="presentation">
+                                                        <a class="slds-tabs_default__link" onclick="viewtabdetail('tab1');" href="javascript:void(0);"
+                                                            role="tab" tabindex="0" aria-selected="true"
+                                                            aria-controls="tab-default-1"
+                                                            id="tab-default-1__item">Academics</a>
+                                                    </li>
+                                                    <li class="slds-tabs_default__item" title="Finances" id="viewtab2" role="presentation">
+                                                        <a class="slds-tabs_default__link" onclick="viewtabdetail('tab2');" href="javascript:void(0);"
+                                                            role="tab" tabindex="-1"
+                                                            aria-selected="false" aria-controls="tab-default-2"
+                                                            id="tab-default-2__item">Finances</a>
+                                                    </li>
+                                                    <li class="slds-tabs_default__item" title="Social" id="viewtab3" role="presentation">
+                                                        <a class="slds-tabs_default__link" onclick="viewtabdetail('tab3');" href="javascript:void(0);"
+                                                            role="tab" tabindex="-1"
+                                                            aria-selected="false" aria-controls="tab-default-3"
+                                                            id="tab-default-3__item">Social</a>
+                                                    </li>
+                                                    <li class="slds-tabs_default__item" title="Recommendations" id="viewtab4" role="presentation">
+                                                        <a class="slds-tabs_default__link" onclick="viewtabdetail('tab4');" href="javascript:void(0);"
+                                                            role="tab" tabindex="-1"
+                                                            aria-selected="false" aria-controls="tab-default-4"
+                                                            id="tab-default-4__item">Recommendations</a>
+                                                    </li>
+                                                </ul>
+
+                                                <div id="tab-default-1" class="slds-tabs_default__content slds-show" role="tabpanel"
+                                                    aria-labelledby="tab-default-1__item">
+                                                    <div class="slds-form" role="list">
+                                                        <div class="slds-form__row">
+                                                            <apex:repeat value="{!$ObjectType.Scholar__c.FieldSets.JuniorsAcademics}" var="f" rendered="{!AND(scholar != null,who == 'Junior')}">
+                                                                <apex:outputPanel layout="none" >
+                                                                    <div class="slds-form__item" role="listitem">
+                                                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                                                            <span class="slds-form-element__label">{!f.label}</span>
+                                                                            <div class="slds-form-element__control">
+                                                                                <div class="slds-form-element__static">
+                                                                                    <apex:outputPanel layout="none" rendered="{!AND(f.Label == 'Online Video URL', scholar[f.fieldPath] != '')}" >
+                                                                                        <apex:outputLink target="_blank" value="{!scholar[f.fieldPath]}">Click to view online video</apex:outputLink>
+                                                                                    </apex:outputPanel>
+                                                                                    <apex:outputPanel layout="none" rendered="{!NOT(f.Label == 'Online Video URL')}" >
+                                                                                        <apex:outputText value="{!scholar[f.fieldPath]}" />
+                                                                                    </apex:outputPanel>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </apex:outputPanel>
+                                                            </apex:repeat>
+                                                            <apex:repeat value="{!$ObjectType.Scholar__c.FieldSets.SeniorsAcademics}" var="f" rendered="{!AND(scholar != null,who == 'Senior')}">
+                                                                <apex:outputPanel layout="none" >
+                                                                    <div class="slds-form__item" role="listitem">
+                                                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                                                            <span class="slds-form-element__label">{!f.label}</span>
+                                                                            <div class="slds-form-element__control">
+                                                                                <div class="slds-form-element__static">
+                                                                                    <apex:outputPanel layout="none" rendered="{!AND(f.Label == 'Online Video URL', scholar[f.fieldPath] != '')}" >
+                                                                                        <apex:outputLink target="_blank" value="{!scholar[f.fieldPath]}">Click to view online video</apex:outputLink>
+                                                                                    </apex:outputPanel>
+                                                                                    <apex:outputPanel layout="none" rendered="{!NOT(f.Label == 'Online Video URL')}" >
+                                                                                        <apex:outputText value="{!scholar[f.fieldPath]}" />
+                                                                                    </apex:outputPanel>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </apex:outputPanel>
+                                                            </apex:repeat>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="tab-default-2" class="slds-tabs_default__content slds-hide" role="tabpanel"
+                                                    aria-labelledby="tab-default-2__item">
+                                                    <div class="slds-form" role="list">
+                                                        <div class="slds-form__row">
+                                                            <apex:repeat value="{!$ObjectType.Scholar__c.FieldSets.JuniorsFinances}" var="f" rendered="{!AND(scholar != null,who == 'Junior')}">
+                                                                <apex:outputPanel layout="none" >
+                                                                    <div class="slds-form__item" role="listitem">
+                                                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                                                            <span class="slds-form-element__label">{!f.label}</span>
+                                                                            <div class="slds-form-element__control">
+                                                                                <div class="slds-form-element__static">
+                                                                                    <apex:outputPanel layout="none" rendered="{!AND(f.Label == 'Online Video URL', scholar[f.fieldPath] != '')}" >
+                                                                                        <apex:outputLink target="_blank" value="{!scholar[f.fieldPath]}">Click to view online video</apex:outputLink>
+                                                                                    </apex:outputPanel>
+                                                                                    <apex:outputPanel layout="none" rendered="{!NOT(f.Label == 'Online Video URL')}" >
+                                                                                        <apex:outputText value="{!scholar[f.fieldPath]}" />
+                                                                                    </apex:outputPanel>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </apex:outputPanel>
+                                                            </apex:repeat>
+                                                            <apex:repeat value="{!$ObjectType.Scholar__c.FieldSets.SeniorsFinance}" var="f" rendered="{!AND(scholar != null,who == 'Senior')}">
+                                                                <apex:outputPanel layout="none" >
+                                                                    <div class="slds-form__item" role="listitem">
+                                                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                                                            <span class="slds-form-element__label">{!f.label}</span>
+                                                                            <div class="slds-form-element__control">
+                                                                                <div class="slds-form-element__static">
+                                                                                    <apex:outputPanel layout="none" rendered="{!AND(f.Label == 'Online Video URL', scholar[f.fieldPath] != '')}" >
+                                                                                        <apex:outputLink target="_blank" value="{!scholar[f.fieldPath]}">Click to view online video</apex:outputLink>
+                                                                                    </apex:outputPanel>
+                                                                                    <apex:outputPanel layout="none" rendered="{!NOT(f.Label == 'Online Video URL')}" >
+                                                                                        <apex:outputText value="{!scholar[f.fieldPath]}" />
+                                                                                    </apex:outputPanel>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </apex:outputPanel>
+                                                            </apex:repeat>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="tab-default-3" class="slds-tabs_default__content slds-hide" role="tabpanel"
+                                                    aria-labelledby="tab-default-3__item">
+                                                    <div class="slds-form" role="list">
+                                                        <div class="slds-form__row">
+                                                            <apex:repeat value="{!$ObjectType.Scholar__c.FieldSets.JuniorsRecommendation}" var="f" rendered="{!AND(scholar != null,who == 'Junior')}">
+                                                                <apex:outputPanel layout="none" >
+                                                                    <div class="slds-form__item" role="listitem">
+                                                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                                                            <span class="slds-form-element__label">{!f.label}</span>
+                                                                            <div class="slds-form-element__control">
+                                                                                <div class="slds-form-element__static">
+                                                                                    <apex:outputPanel layout="none" rendered="{!AND(f.Label == 'Online Video URL', scholar[f.fieldPath] != '')}" >
+                                                                                        <apex:outputLink target="_blank" value="{!scholar[f.fieldPath]}">Click to view online video</apex:outputLink>
+                                                                                    </apex:outputPanel>
+                                                                                    <apex:outputPanel layout="none" rendered="{!NOT(f.Label == 'Online Video URL')}" >
+                                                                                        <apex:outputText value="{!scholar[f.fieldPath]}" />
+                                                                                    </apex:outputPanel>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </apex:outputPanel>
+                                                            </apex:repeat>
+                                                            <apex:repeat value="{!$ObjectType.Scholar__c.FieldSets.SeniorsRecommendation}" var="f" rendered="{!AND(scholar != null,who == 'Senior')}">
+                                                                <apex:outputPanel layout="none" >
+                                                                    <div class="slds-form__item" role="listitem">
+                                                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                                                            <span class="slds-form-element__label">{!f.label}</span>
+                                                                            <div class="slds-form-element__control">
+                                                                                <div class="slds-form-element__static">
+                                                                                    <apex:outputPanel layout="none" rendered="{!AND(f.Label == 'Online Video URL', scholar[f.fieldPath] != '')}" >
+                                                                                        <apex:outputLink target="_blank" value="{!scholar[f.fieldPath]}">Click to view online video</apex:outputLink>
+                                                                                    </apex:outputPanel>
+                                                                                    <apex:outputPanel layout="none" rendered="{!NOT(f.Label == 'Online Video URL')}" >
+                                                                                        <apex:outputText value="{!scholar[f.fieldPath]}" />
+                                                                                    </apex:outputPanel>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </apex:outputPanel>
+                                                            </apex:repeat>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="tab-default-4" class="slds-tabs_default__content slds-hide" role="tabpanel"
+                                                    aria-labelledby="tab-default-4__item">
+                                                    <div class="slds-form" role="list">
+                                                        <div class="slds-form__row">
+                                                            <apex:repeat value="{!$ObjectType.Scholar__c.FieldSets.JuniorsSocial}" var="f" rendered="{!AND(scholar != null,who == 'Junior')}">
+                                                                <apex:outputPanel layout="none" >
+                                                                    <div class="slds-form__item" role="listitem">
+                                                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                                                            <span class="slds-form-element__label">{!f.label}</span>
+                                                                            <div class="slds-form-element__control">
+                                                                                <div class="slds-form-element__static">
+                                                                                    <apex:outputPanel layout="none" rendered="{!AND(f.Label == 'Online Video URL', scholar[f.fieldPath] != '')}" >
+                                                                                        <apex:outputLink target="_blank" value="{!scholar[f.fieldPath]}">Click to view online video</apex:outputLink>
+                                                                                    </apex:outputPanel>
+                                                                                    <apex:outputPanel layout="none" rendered="{!NOT(f.Label == 'Online Video URL')}" >
+                                                                                        <apex:outputText value="{!scholar[f.fieldPath]}" />
+                                                                                    </apex:outputPanel>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </apex:outputPanel>
+                                                            </apex:repeat>
+                                                            <apex:repeat value="{!$ObjectType.Scholar__c.FieldSets.SeniorsSocial}" var="f" rendered="{!AND(scholar != null,who == 'Senior')}">
+                                                                <apex:outputPanel layout="none" >
+                                                                    <div class="slds-form__item" role="listitem">
+                                                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                                                            <span class="slds-form-element__label">{!f.label}</span>
+                                                                            <div class="slds-form-element__control">
+                                                                                <div class="slds-form-element__static">
+                                                                                    <apex:outputPanel layout="none" rendered="{!AND(f.Label == 'Online Video URL', scholar[f.fieldPath] != '')}" >
+                                                                                        <apex:outputLink target="_blank" value="{!scholar[f.fieldPath]}">Click to view online video</apex:outputLink>
+                                                                                    </apex:outputPanel>
+                                                                                    <apex:outputPanel layout="none" rendered="{!NOT(f.Label == 'Online Video URL')}" >
+                                                                                        <apex:outputText value="{!scholar[f.fieldPath]}" />
+                                                                                    </apex:outputPanel>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </apex:outputPanel>
+                                                            </apex:repeat>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col  slds-size_3-of-12">
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col  slds-size_1-of-1">
+                                            <center>
+                                                <b>Files</b>
+                                            </center>
+                                            <br/>
+                                            <apex:outputText rendered="{!hasAttachments}" >
+                                               <p style="font-size: 10px;display:none;"> The attachments listed below can be opened
+                                                or downloaded for viewing, depending
+                                                on the file type and your browser
+                                                configuration. If your browser is
+                                                congigured to do display the content
+                                                type the attachment will open in
+                                                a new window or tab. If not, the
+                                                file will be downoladed. If the file
+                                                opens in a new window or tab close
+                                                the window or tab when you are finised
+                                                viewing the attachment.</p>
+                                            </apex:outputText>
+                                            <div class="slds-form" role="list">
+                                                <div class="slds-form__row">
+                                                    <apex:repeat value="{!scholar.ContentDocumentLinks}" var="att" rendered="{!hasAttachments}">
+                                                        <div class="slds-form__item" role="listitem" style="    min-width: 100%;">
+                                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                                                <span class="slds-form-element__label">
+                                                                    <a  target="_blank" href="{!$Site.Prefix}/sfc/servlet.shepherd/version/download/{!att.ContentDocument.LatestPublishedVersionId}"
+                                                                        title="View" style="font-size: 10pt;">{!att.ContentDocument.title}</a>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </apex:repeat>  
+                                                </div>
+                                            </div>
+                                            <apex:outputpanel rendered="{!NOT(hasAttachments)}" layout="none">
+                                                <p>There are no attachments to display</p>
+                                            </apex:outputpanel>
+                                        </div>
+                                    </div>
+                                    <br/><br/>
+                                    <div class="slds-grid slds-gutters" style="border-top: 1px solid lightgray;">
+                                        <div class="slds-col  slds-size_1-of-1">
+                                            <br/>
+                                            <center>
+                                                <b>Activities</b>
+                                            </center>
+                                            <br/>
+                                            <table class=" slds-table_bordered" >
+                                                <thead>
+                                                    <tr class="slds-line-height_reset" style="background-color: #f3f0ec;">
+                                                        <th class="" scope="col" style="padding: 5px;">SUBJECT</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <apex:repeat value="{!Scholar.ActivityHistories}" var="objactivety"> 
+                                                        <tr>
+                                                        <td><a href="/{!objactivety.id}" target="_blank">{!objactivety.subject}</a></td>
+                                                        </tr>
+                                                    </apex:repeat>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                </div>
+            </apex:form>
+        </div>
+    </body>
+    </html>
+
+
+
+</apex:page>

@@ -1,0 +1,1 @@
+<aura:event type="COMPONENT" description="component Event to refresh" />

@@ -1,0 +1,170 @@
+<apex:page controller="VotingSetupController" standardStylesheets="false" lightningStylesheets="true"
+    sidebar="false" applyBodyTag="false" docType="html-5.0">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+        lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge" />
+        <title>Voting Setup</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <apex:slds />
+        <style>
+            .tabbedspace{
+                padding-left: 22px !important;
+            }
+            .slds-scope .slds-input {
+                min-height: calc(0rem + (1px * 0)) !important;
+                padding: 0 1rem 0 .25rem  !important ;
+            }
+            .slds-scope .slds-table_edit thead th, .slds-scope .slds-table--edit thead th {
+                padding: 5px !important;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="slds-scope">
+            <apex:form >
+                <div class="slds-scope" id="assignment_area" style="width: 75%;margin-left: 10%;">
+                    <apex:pageMessages />
+                    <div class="slds-panel__header">
+                        
+                        <h2 class="slds-panel__header-title slds-text-heading_small slds-truncate" style="font-weight: 700;"
+                            title="New SMS">Scholar Voting Management</h2>
+                    </div>
+                <br/>
+                    <div class="slds-form-element">
+                        <div class="slds-form-element__control tabbedspace">
+                            <apex:outputPanel rendered="{!NOT(votingEnabled)}" layout="none" >
+                                <p>{!votingFor}.</p>
+                                <p>There are {!juniorCount} junior year applications in the
+                                    current applicant pool.</p>
+                                <p>There are {!seniorCount} senior year applications in the
+                                    current applicant pool.</p>
+                                <p>To open voting for juniors or seniors select the class year
+                                    and the voters below.</p>
+                                <p>Clicking &lsquo;Tally Votes&rsquo; will tally the current
+                                    votes and update the scholar records with the results.
+                                    You may do this as often as you like, but the results
+                                    will be visible to anyone with permission to view the
+                                    fields.</p>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!votingEnabled}" layout="none" >
+                                    <p>{!votingFor}.</p>
+                                    <p>To close the voting click the button below.</p>
+                            </apex:outputPanel>
+                        </div>
+                    </div>
+                    <br/>
+                    <apex:outputPanel rendered="{!NOT(votingEnabled)}" layout="none"  >
+                        <div class="slds-panel__header">
+                            <h2 class="slds-panel__header-title slds-text-heading_small slds-truncate" style="font-weight: 700;"
+                                title="">Voters</h2>
+                        </div>
+                        <br/>
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control tabbedspace">
+                                <apex:outputPanel id="grid1" layout="none" style="padding-bottom: 8px;">
+                                    <p>Select the class year:&nbsp;&nbsp;
+                                        <apex:selectList value="{!classyear}" multiselect="false" size="1" styleclass="slds-input" style="width: -moz-fit-content;width: auto;" >
+                                            <apex:selectOption itemValue="Junior" itemLabel="Juniors" />
+                                            <apex:selectOption itemValue="Senior" itemLabel="Seniors" />
+                                        </apex:selectList>
+                                    </p>
+                                </apex:outputPanel>
+                                <apex:outputPanel id="grid2" layout="none" style="padding-bottom: 8px;">
+                                    <div class="slds-table_edit_container slds-is-relative">
+                                        <table class="slds-table slds-table_cell-buffer slds-table_bordered" DIR="LTR" >
+                                             <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="" scope="col" >Selected</th>
+                                                    <th class="" scope="col" >User</th>
+                                                </tr>
+                                            `</thead>
+                                             <tbody>
+                                                 <apex:repeat value="{!VoterList}" var="v" >
+                                                     <tr class="slds-hint-parent" >
+                                                         <td data-label="Selected" > 
+                                                            <apex:inputCheckbox value="{!v.selected}" styleClass="slds-checkbox" />
+                                                         </td>
+                                                         <td data-label="User" >
+                                                                <apex:outputField value="{!v.userinfo.Name}"  />
+                                                         </td>
+                                                     </tr>
+                                                 </apex:repeat>
+                                             </tbody>
+                                        </table>
+                                    </div>
+                                </apex:outputPanel>
+                                <br/>
+                                <center>
+                                    <apex:commandButton value="Enable Voting" action="{!enableVoting}" status="enableStatus" styleClass="slds-button slds-button_brand"
+                                    />&nbsp;&nbsp;
+                                    <apex:commandButton value="Tally Votes" action="{!tally}" status="enableStatus" styleClass="slds-button slds-button_brand" />&nbsp;&nbsp;
+                                    <apex:commandButton value="Exit" action="{!exit}" styleClass="slds-button slds-button_brand" />&nbsp;&nbsp;
+                                    <apex:actionStatus startText=" Updating... " stopText="" id="enableStatus" />
+                                </center>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                    <br/>
+                    <apex:outputPanel rendered="{!votingEnabled}" layout="none"  >
+                        <div class="slds-panel__header">
+                            <h2 class="slds-panel__header-title slds-text-heading_small slds-truncate" style="font-weight: 700;"
+                                title="">Voting Status</h2>
+                        </div>
+                        <br/>
+                        <center>
+                            <apex:commandButton value="Close Current Voting Period" action="{!disableVoting}" styleClass="slds-button slds-button_brand"
+                            />&nbsp;&nbsp;
+                            <apex:commandButton value="Exit" action="{!exit}" styleClass="slds-button slds-button_brand" />&nbsp;&nbsp;
+                        </center>
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control tabbedspace">
+                                <apex:outputPanel id="grid4" layout="none" style="padding-bottom: 8px;">
+                                    <div class="slds-table_edit_container slds-is-relative">
+                                        <table class="slds-table slds-table_cell-buffer slds-table_bordered" DIR="LTR" >
+                                             <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="" scope="col" >User</th>
+                                                    <th class="" scope="col" >Votes Required</th>
+                                                    <th class="" scope="col" >Votes Cast</th>
+                                                    <th class="" scope="col" >Pct Completed</th>
+                                                </tr>
+                                            `</thead>
+                                             <tbody>
+                                                 <apex:repeat value="{!VoterList}" var="v" >
+                                                     <tr class="slds-hint-parent" >
+                                                         <td data-label="User" >
+                                                                <apex:outputField value="{!v.userinfo.Name}"  />
+                                                         </td>
+                                                         <td data-label="Votes Required" >
+                                                                <apex:outputText value="{!v.requested}"  />
+                                                         </td>
+                                                         <td data-label="Votes Cast" >
+                                                                <apex:outputText value="{!v.votes}"  />
+                                                         </td>
+                                                         <td data-label="Pct Completed" >
+                                                                <apex:outputText value="{!v.pctComplete}" />
+                                                         </td>
+                                                     </tr>
+                                                 </apex:repeat>
+                                             </tbody>
+                                        </table>
+                                    </div>
+                                </apex:outputPanel>
+                                <br/>
+                                <center>
+                                    <apex:commandButton value="Close Current Voting Period" action="{!disableVoting}" styleClass="slds-button slds-button_brand"
+                                    />&nbsp;&nbsp;
+                                    <apex:commandButton value="Exit" action="{!exit}" styleClass="slds-button slds-button_brand" />&nbsp;&nbsp;
+                                </center>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </div>
+            </apex:form>
+        </div>
+    </body>
+    </html>
+</apex:page>

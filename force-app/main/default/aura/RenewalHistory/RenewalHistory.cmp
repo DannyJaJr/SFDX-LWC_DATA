@@ -1,0 +1,187 @@
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+  access="global"
+  controller="RenewalHistoryController"
+>
+  <aura:html tag="style">
+    table { border-collapse: collapse; width: 100%; } th, td { text-align: left;
+    padding: 8px; } tr:nth-child(even){background-color: rgba(57, 116, 169,
+    0.08)} th { background-color: #4CAF50; color: white; }
+  </aura:html>
+
+  <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+
+  <aura:attribute name="renewalHistory" type="List" />
+  <aura:attribute name="renewalfirstRecord" type="Object" />
+  <aura:attribute name="allData" type="List" />
+  <aura:attribute name="data" type="List" />
+  <aura:attribute name="currentPageNumber" type="Integer" default="1" />
+  <aura:attribute name="pageSize" type="Integer" default="15" />
+  <aura:attribute name="totalPages" type="Integer" default="0" />
+  <aura:attribute name="pageList" type="List" />
+  <aura:attribute name="TotalRecord" type="Integer" />
+  <aura:attribute name="Index" type="Integer" default="0" />
+
+  <aura:if isTrue="{!not(empty(v.renewalHistory))}">
+    <table
+      class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered"
+      style="width: 85%; margin-left: 6%; margin-bottom: 3%"
+    >
+      <thead class="ForColor">
+        <tr class="slds-line-height_reset">
+          <th class="color" scope="col" colspan="2">
+            <div class="slds-truncate">Most Recent Renewal</div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Created Date</td>
+          <td>{! v.renewalfirstRecord.createddate}</td>
+        </tr>
+        <tr>
+          <td>Status</td>
+          <td>{! v.renewalfirstRecord.status}</td>
+        </tr>
+        <tr>
+          <td>Stipend Amount</td>
+          <td>${! v.renewalfirstRecord.amount}</td>
+        </tr>
+
+        <tr>
+          <td>Term and Year</td>
+          <td>
+            {!v.renewalfirstRecord.term}&nbsp;{!
+            v.renewalfirstRecord.schoolyear}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <center>
+      <header class="header1">
+        <h2
+          id="modal-heading-01"
+          class="slds-modal__title slds-hyphenate"
+          style="float: left; margin-left: 25px; margin-bottom: 22px"
+        >
+          <b>Past Renewals / Support Requests</b>
+        </h2>
+      </header>
+    </center>
+    <table
+      class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered"
+      style="margin-left: 20px; margin-right: 20px; width: 96%"
+    >
+      <thead class="ForColor">
+        <tr class="slds-line-height_reset">
+          <th class="color" scope="col">
+            <div class="slds-truncate" title="Opportunity Name">
+              Created Date
+            </div>
+          </th>
+          <th class="color" scope="col">
+            <div class="slds-truncate" title="Account Name">Semester</div>
+          </th>
+          <th class="color" scope="col">
+            <div class="slds-truncate" title="Year">Year</div>
+          </th>
+          <th class="color" scope="col">
+            <div class="slds-truncate" title="Close Date">Status</div>
+          </th>
+          <th class="color" scope="col">
+            <div class="slds-truncate" title="Close Date">Amount</div>
+          </th>
+          <th class="color" scope="col">
+            <div class="slds-truncate" title="Close Date">Payment Date</div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <aura:iteration items="{! v.renewalHistory}" var="item" indexVar="idx">
+          <aura:if isTrue="{! idx==0}">
+            <aura:set attribute="else">
+              <tr>
+                <td>{!item.createddate}</td>
+                <td>{!item.term}</td>
+                <td>{!item.schoolyear}</td>
+                <td>{!item.status }</td>
+                <td>${!item.amount}</td>
+                <td>{!item.paymentdate}</td>
+              </tr>
+            </aura:set>
+          </aura:if>
+        </aura:iteration>
+      </tbody>
+    </table>
+
+    <lightning:layout multipleRows="true" horizontalAlign="center">
+      <lightning:layoutItem padding="around-small" flexibility="auto">
+        <lightning:button
+          label="First"
+          iconName="utility:left"
+          iconPosition="left"
+          onclick="{!c.onFirst}"
+          disabled="{! v.currentPageNumber == 1}"
+        />
+        <lightning:button
+          iconName="utility:chevronleft"
+          iconPosition="left"
+          onclick="{!c.onPrev}"
+          disabled="{! v.currentPageNumber == 1}"
+        />
+        <span class="slds-p-horizontal_x-small">
+          <a
+            onclick="{!c.processMe}"
+            name="1"
+            class="{! (v.currentPageNumber == 1) ? 'selected' : ''}"
+            >1</a
+          >
+        </span>
+        <span class="slds-p-horizontal_xxx-small">
+          <a>...</a>
+        </span>
+
+        <aura:iteration items="{!v.pageList}" var="item">
+          <span class="slds-p-horizontal_x-small">
+            <a
+              onclick="{!c.processMe}"
+              name="{!item}"
+              class="{! (v.currentPageNumber == item) ? 'selected' : ''}"
+              >{!item}</a
+            >
+          </span>
+        </aura:iteration>
+
+        <span class="slds-p-horizontal_xxx-small">
+          <a>...</a>
+        </span>
+        <span class="slds-p-horizontal_x-small">
+          <a
+            onclick="{!c.processMe}"
+            name="{!v.totalPages}"
+            class="{! (v.currentPageNumber == v.totalPages) ? 'selected' : ''}"
+            >{!v.totalPages}</a
+          >
+        </span>
+        <lightning:button
+          iconName="utility:chevronright"
+          iconPosition="right"
+          disabled="{! v.currentPageNumber == v.totalPages}"
+          onclick="{!c.onNext}"
+        />
+        <lightning:button
+          label="Last"
+          iconName="utility:right"
+          iconPosition="right"
+          disabled="{! v.currentPageNumber == v.totalPages}"
+          onclick="{!c.onLast}"
+        />
+      </lightning:layoutItem>
+    </lightning:layout>
+
+    <aura:set attribute="else">
+      <h2>Sorry, No Renewal Data Available</h2>
+    </aura:set>
+  </aura:if>
+</aura:component>

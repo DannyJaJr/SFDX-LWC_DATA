@@ -1,0 +1,134 @@
+<aura:component
+  controller="ScholarContactsDetails"
+  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+  access="global"
+>
+  <aura:handler name="init" action="{!c.doinit}" value="{!this}" />
+
+  <aura:attribute name="con" type="contact" />
+  <aura:attribute name="ContentId" type="string" />
+  <aura:attribute name="ShowDetails" type="boolean" default="false" />
+  <aura:attribute name="ShowModal" type="boolean" />
+  <aura:attribute name="ChangeImage" type="boolean" />
+  <aura:attribute name="parentId" type="String" />
+  <aura:attribute name="ShowImageModal" type="boolean" />
+  <aura:handler
+    name="ImageRender"
+    event="c:ImageReRenderCommunity"
+    action="{!c.RenderImage}"
+  />
+
+  <!--Attributes section end-->
+  <div class="spinclass">
+    <!-- <lightning:spinner alternativeText="Loading" size="small" class="slds-spinner_container" />-->
+  </div>
+  <aura:if isTrue="{!v.ShowDetails}">
+    <!--<center>
+                <img  src="{!'/sfc/servlet.shepherd/version/download/'+v.attachId}" height="150" width="130"/>
+            
+        </center>-->
+    <aura:if isTrue="{!v.ContentId}">
+      <center>
+        <img
+          src="{!'/sfc/servlet.shepherd/version/download/'+ v.ContentId}"
+          height="130"
+          width="130"
+        />
+      </center>
+      <aura:set attribute="else">
+        <center>
+          <img
+            src="{!$Resource.PlaceHolderImageComp}"
+            height="100"
+            width="100"
+          />
+        </center>
+      </aura:set>
+    </aura:if>
+    <br />
+    <center>
+      <h1>{!v.con.Name}</h1>
+      {!v.con.Email}<br /> {!v.con.MobilePhone}
+    </center>
+    <br />
+
+    <aura:if isTrue="{!v.ShowModal}">
+      <lightning:recordEditForm
+        aura:id="myform"
+        onsubmit="{!c.handleSubmit}"
+        onsuccess="{!c.handleSuccess}"
+        onerror="{!c.handleOnError}"
+        recordId="{!v.con.Id}"
+        objectApiName="Contact"
+      >
+        <section
+          role="dialog"
+          tabindex="-1"
+          class="slds-modal slds-fade-in-open slds-modal_medium"
+          aria-labelledby="modal-heading-01"
+          aria-modal="true"
+          aria-describedby="modal-content-id-1"
+        >
+          <div class="slds-modal__container">
+            <header class="slds-modal__header">
+              <button
+                class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                title="Close"
+                onclick="{!c.cancel}"
+              >
+                <lightning:icon
+                  iconName="utility:close"
+                  size="medium"
+                  variant="bare"
+                />
+                <span class="slds-assistive-text">Close</span>
+              </button>
+              <h2
+                id="modal-heading-01"
+                class="slds-modal__title slds-hyphenate"
+              >
+                <b>Edit Contact</b>
+              </h2>
+            </header>
+            <div
+              class="slds-modal__content slds-p-around_medium"
+              id="modal-content-id-1"
+            >
+              <lightning:inputField fieldName="Name" />
+              <lightning:inputField fieldName="Email" />
+              <lightning:inputField fieldName="MobilePhone" />
+            </div>
+            <footer class="slds-modal__footer">
+              <lightning:button
+                variant="brand"
+                type="submit"
+                name="save"
+                label="Save"
+              />
+              <lightning:button
+                variant="neutral"
+                name="Cancel"
+                label="Cancel"
+                onclick="{!c.cancel}"
+              />
+            </footer>
+          </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+      </lightning:recordEditForm>
+    </aura:if>
+    <aura:set attribute="else">
+      <center><b>No Data Found!</b></center>
+    </aura:set>
+  </aura:if>
+  <center>
+    <a onclick="{!c.EditContact}">Update Info</a> /
+    <a onclick="{!c.UpdateImage}">Upload Image</a>
+  </center>
+  <aura:if isTrue="{!v.ChangeImage}">
+    <c:ChangeImageInCommunity
+      parentId="{!v.parentId}"
+      ShowImageModal="{!v.ShowImageModal}"
+    />
+  </aura:if>
+</aura:component>

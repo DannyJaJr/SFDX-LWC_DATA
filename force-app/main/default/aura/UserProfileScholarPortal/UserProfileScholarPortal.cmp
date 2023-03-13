@@ -1,0 +1,549 @@
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes"
+  controller="UserProfileScholarPortalController"
+  access="global"
+>
+  <aura:attribute
+    name="activeSections"
+    type="List"
+    default="['Interest','Links','Org']"
+  />
+  <aura:attribute name="ChangeImage" type="boolean" />
+  <aura:attribute name="ShowImageModal" type="boolean" />
+  <aura:attribute name="contactData" type="object" />
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <aura:attribute name="ShowModal" type="boolean" />
+  <aura:attribute name="ShowSpinner" type="boolean" />
+  <aura:attribute name="parentId" type="String" />
+  <aura:handler
+    name="ImageRender"
+    event="c:ImageReRenderCommunity"
+    action="{!c.RenderImage}"
+  />
+
+  <div class="c-container">
+    <lightning:layout multipleRows="true">
+      <lightning:layoutItem padding="around-small" size="12">
+        <div class="page-section page-header">
+          <h2></h2>
+        </div>
+      </lightning:layoutItem>
+      <lightning:layoutItem padding="around-small" size="12">
+        <lightning:layout>
+          <lightning:layoutItem padding="around-small" size="3">
+            <div class="page-section page-right">
+              <h2></h2>
+              <p>
+                <div>
+                  <img
+                    aura:id="imgOver"
+                    src="{!'/servlet/servlet.FileDownload?file='+ v.contactData.Photo_Attachment_Id__c}"
+                    onmouseover="{!c.UpdatePicture}"
+                    onmouseleave="{!c.resetImg}"
+                    onclick="{!c.uploadpicWizard}"
+                    class="imgcls"
+                  />
+                  <br />
+                  <br />
+                  <br />
+                  <center>
+                    <lightning:button
+                      label="Upload Photo"
+                      title="Upload Photo"
+                      onclick="{! c.UpdateImage }"
+                      iconName="utility:upload"
+                    />
+                    <!-- <a onclick="{!c.UpdateImage}">Upload Image</a>  -->
+                  </center>
+                </div>
+              </p>
+            </div>
+          </lightning:layoutItem>
+          <lightning:layoutItem padding="around-small" size="6">
+            <div class="page-section page-main">
+              <h2></h2>
+              <p>
+                <div class="slds-grid slds-gutters_small full cols-2">
+                  <div
+                    class="slds-col slds-grid slds-has-flexi-truncate"
+                    role="listitem"
+                  >
+                    <div
+                      class="slds-form-element slds-form-element_readonly slds-grow slds-hint-parent override--slds-form-element"
+                    >
+                      <div
+                        class="test-id__field-label-container slds-form-element__label"
+                      >
+                        <span class="test-id__field-label">Name</span>
+                      </div>
+                      <div
+                        class="slds-form-element__control slds-grid itemBody"
+                      >
+                        <span
+                          class="test-id__field-value slds-form-element__static slds-grow is-read-only"
+                          ><span
+                            class="uiOutputText"
+                            data-aura-class="uiOutputText"
+                            >{! v.contactData.Name}
+                          </span></span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="slds-col slds-grid slds-has-flexi-truncate"
+                    role="listitem"
+                  >
+                    <div
+                      class="slds-form-element slds-form-element_readonly slds-grow slds-hint-parent override--slds-form-element"
+                    >
+                      <div
+                        class="test-id__field-label-container slds-form-element__label"
+                      >
+                        <span class="test-id__field-label">Title</span>
+                      </div>
+                      <div
+                        class="slds-form-element__control slds-grid itemBody"
+                      >
+                        <span
+                          class="test-id__field-value slds-form-element__static slds-grow is-read-only"
+                          ><span class="uiOutputText">
+                            {! v.contactData.Title}
+                          </span></span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="slds-grid slds-gutters_small full cols-2">
+                  <div
+                    class="slds-col slds-grid slds-has-flexi-truncate"
+                    role="listitem"
+                  >
+                    <div
+                      class="slds-form-element slds-form-element_readonly slds-grow slds-hint-parent override--slds-form-element"
+                    >
+                      <div
+                        class="test-id__field-label-container slds-form-element__label"
+                      >
+                        <span class="test-id__field-label">Manager</span>
+                      </div>
+                      <div
+                        class="slds-form-element__control slds-grid itemBody"
+                      >
+                        <span
+                          class="test-id__field-value slds-form-element__static slds-grow is-read-only"
+                          ><span
+                            class="uiOutputText"
+                            data-aura-class="uiOutputText"
+                          ></span
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="slds-col slds-grid slds-has-flexi-truncate"
+                    role="listitem"
+                  >
+                    <div
+                      class="slds-form-element slds-form-element_readonly slds-grow slds-hint-parent override--slds-form-element"
+                    >
+                      <div
+                        class="test-id__field-label-container slds-form-element__label"
+                      >
+                        <span class="test-id__field-label">Company Name</span>
+                      </div>
+                      <div
+                        class="slds-form-element__control slds-grid itemBody"
+                      >
+                        <span
+                          class="test-id__field-value slds-form-element__static slds-grow is-read-only"
+                          ><span class="uiOutputText"
+                            >{!
+                            v.contactData.C4G_High_School_or_Organization__c}</span
+                          ></span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="slds-grid slds-gutters_small full cols-2">
+                  <div
+                    class="slds-col slds-grid slds-has-flexi-truncate"
+                    role="listitem"
+                  >
+                    <div
+                      class="slds-form-element slds-form-element_readonly slds-grow slds-hint-parent override--slds-form-element"
+                    >
+                      <div
+                        class="test-id__field-label-container slds-form-element__label"
+                      >
+                        <span class="test-id__field-label">About Me</span>
+                      </div>
+                      <div
+                        class="slds-form-element__control slds-grid itemBody"
+                      >
+                        <span
+                          class="test-id__field-value slds-form-element__static slds-grow is-read-only"
+                          ><span
+                            class="uiOutputText"
+                            data-aura-class="uiOutputText"
+                          >
+                            {! v.contactData.Description}
+                          </span></span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="slds-grid slds-gutters_small full cols-2">
+                  <div
+                    class="slds-col slds-grid slds-has-flexi-truncate"
+                    role="listitem"
+                  >
+                    <div
+                      class="slds-form-element slds-form-element_readonly slds-grow slds-hint-parent override--slds-form-element"
+                    >
+                      <div
+                        class="test-id__field-label-container slds-form-element__label"
+                      >
+                        <span class="test-id__field-label">Email</span>
+                      </div>
+                      <div
+                        class="slds-form-element__control slds-grid itemBody"
+                      >
+                        <span
+                          class="test-id__field-value slds-form-element__static slds-grow is-read-only"
+                          ><span
+                            class="uiOutputText"
+                            data-aura-class="uiOutputText"
+                          >
+                            {! v.contactData.Email}
+                          </span></span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="slds-col slds-grid slds-has-flexi-truncate"
+                    role="listitem"
+                  >
+                    <div
+                      class="slds-form-element slds-form-element_readonly slds-grow slds-hint-parent override--slds-form-element"
+                    >
+                      <div
+                        class="test-id__field-label-container slds-form-element__label"
+                      >
+                        <span class="test-id__field-label">Phone</span>
+                      </div>
+                      <div
+                        class="slds-form-element__control slds-grid itemBody"
+                      >
+                        <span
+                          class="test-id__field-value slds-form-element__static slds-grow is-read-only"
+                          ><span class="uiOutputText">
+                            {! v.contactData.Phone}
+                          </span></span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="slds-grid slds-gutters_small full cols-2">
+                  <div
+                    class="slds-col slds-grid slds-has-flexi-truncate"
+                    role="listitem"
+                  >
+                    <div
+                      class="slds-form-element slds-form-element_readonly slds-grow slds-hint-parent override--slds-form-element"
+                    >
+                      <div
+                        class="test-id__field-label-container slds-form-element__label"
+                      >
+                        <span class="test-id__field-label">Mobile</span>
+                      </div>
+                      <div
+                        class="slds-form-element__control slds-grid itemBody"
+                      >
+                        <span
+                          class="test-id__field-value slds-form-element__static slds-grow is-read-only"
+                          ><span
+                            class="uiOutputText"
+                            data-aura-class="uiOutputText"
+                          >
+                            {! v.contactData.MobilePhone}
+                          </span></span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="slds-col slds-grid slds-has-flexi-truncate"
+                    role="listitem"
+                  >
+                    <div
+                      class="slds-form-element slds-form-element_readonly slds-grow slds-hint-parent override--slds-form-element"
+                    >
+                      <div
+                        class="test-id__field-label-container slds-form-element__label"
+                      >
+                        <span class="test-id__field-label">Fax</span>
+                      </div>
+                      <div
+                        class="slds-form-element__control slds-grid itemBody"
+                      >
+                        <span
+                          class="test-id__field-value slds-form-element__static slds-grow is-read-only"
+                          ><span class="uiOutputText">
+                            {! v.contactData.Fax}
+                          </span></span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="slds-grid slds-gutters_small full cols-2">
+                  <div
+                    class="slds-col slds-grid slds-has-flexi-truncate"
+                    role="listitem"
+                  >
+                    <div
+                      class="slds-form-element slds-form-element_readonly slds-grow slds-hint-parent override--slds-form-element"
+                    >
+                      <div
+                        class="test-id__field-label-container slds-form-element__label"
+                      >
+                        <span class="test-id__field-label">Address</span>
+                      </div>
+                      <div
+                        class="slds-form-element__control slds-grid itemBody"
+                      >
+                        <span
+                          class="test-id__field-value slds-form-element__static slds-grow is-read-only"
+                          ><span
+                            class="uiOutputText"
+                            data-aura-class="uiOutputText"
+                          >
+                            {! v.contactData.MailingAddress.street} , {!
+                            v.contactData.MailingAddress.city}
+                            <br />
+                            {! v.contactData.MailingAddress.state}, {!
+                            v.contactData.MailingAddress.country}
+                            <br />
+                            {! v.contactData.MailingAddress.postalCode}
+                          </span></span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </p>
+              <p></p>
+            </div>
+          </lightning:layoutItem>
+          <lightning:layoutItem padding="around-small" size="3">
+            <div class="page-section page-right">
+              <h2></h2>
+
+              <!--Edit Button -->
+              <lightning:button
+                label="Edit"
+                iconName="Action:edit"
+                iconPosition="left"
+                variant="Brand"
+                onclick="{!c.EditProfile}"
+              />
+              <!-- <ul>
+                                <li><a href="#">Archive 1</a>
+                                </li>
+                                <li><a href="#">Archive 2</a>
+                                </li>
+                                <li><a href="#">Archive 3</a>
+                                </li>
+                                <li><a href="#">Archive 4</a>
+                                </li>
+                                <li><a href="#">Archive 5</a>
+                                </li>
+                            </ul> -->
+            </div>
+          </lightning:layoutItem>
+        </lightning:layout>
+      </lightning:layoutItem>
+      <lightning:layoutItem flexibility="auto" size="12">
+        <!-- class="page-footer page-section" -->
+        <div>
+          <!-- activeSectionName="{!v.activeSections }"   allowMultipleSectionsOpen="true" -->
+          <lightning:accordion aura:id="accordion" activeSectionName="Links">
+            <lightning:accordionSection name="Links" label="Links">
+              <div class="slds-grid slds-gutters_small full cols-2">
+                <div
+                  class="slds-col slds-grid slds-has-flexi-truncate"
+                  role="listitem"
+                >
+                  <div
+                    class="slds-form-element slds-form-element_readonly slds-grow slds-hint-parent override--slds-form-element"
+                  >
+                    <div
+                      class="test-id__field-label-container slds-form-element__label"
+                    >
+                      <span class="test-id__field-label">LinkedIn Profile</span>
+                    </div>
+                    <div class="slds-form-element__control slds-grid itemBody">
+                      <span
+                        class="test-id__field-value slds-form-element__static slds-grow is-read-only"
+                        ><span
+                          class="uiOutputText"
+                          data-aura-class="uiOutputText"
+                        >
+                          {! v.contactData.LinkedIn_Profile__c}
+                        </span></span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="slds-col slds-grid slds-has-flexi-truncate"
+                  role="listitem"
+                >
+                  <div
+                    class="slds-form-element slds-form-element_readonly slds-grow slds-hint-parent override--slds-form-element"
+                  >
+                    <div
+                      class="test-id__field-label-container slds-form-element__label"
+                    >
+                      <span class="test-id__field-label">Other Links </span>
+                    </div>
+                    <div class="slds-form-element__control slds-grid itemBody">
+                      <span
+                        class="test-id__field-value slds-form-element__static slds-grow is-read-only"
+                        ><span class="uiOutputText"></span
+                      ></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </lightning:accordionSection>
+          </lightning:accordion>
+        </div>
+      </lightning:layoutItem>
+    </lightning:layout>
+  </div>
+  <aura:if isTrue="{!v.ShowSpinner}">
+    <div class="slds-align--absolute-center">
+      <lightning:spinner alternativeText="Loading" size="medium" class="spin" />
+    </div>
+  </aura:if>
+  <aura:if isTrue="{!v.ShowModal}">
+    <lightning:recordEditForm
+      aura:id="myform"
+      onsubmit="{!c.handleSubmit}"
+      onsuccess="{!c.handleSuccess}"
+      onerror="{!c.handleOnError}"
+      recordId="{!v.contactData.Id}"
+      objectApiName="Contact"
+    >
+      <section
+        role="dialog"
+        tabindex="-1"
+        class="slds-modal slds-fade-in-open slds-modal_medium"
+        aria-labelledby="modal-heading-01"
+        aria-modal="true"
+        aria-describedby="modal-content-id-1"
+      >
+        <div class="slds-modal__container">
+          <header class="slds-modal__header">
+            <button
+              class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+              title="Close"
+              onclick="{!c.cancel}"
+            >
+              <lightning:icon
+                iconName="utility:close"
+                size="medium"
+                variant="bare"
+              />
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+              <b>Edit Contact</b>
+            </h2>
+          </header>
+          <div
+            class="slds-modal__content slds-p-around_medium"
+            id="modal-content-id-1"
+          >
+            <div class="slds-grid">
+              <div class="slds-col slds-size_1-of-2">
+                <lightning:inputField fieldName="Name" />
+              </div>
+              <div class="slds-col slds-size_1-of-2">
+                <lightning:inputField fieldName="Title" />
+              </div>
+            </div>
+            <br />
+            <div class="slds-grid">
+              <div class="slds-col slds-size_1-of-2">
+                <lightning:inputField fieldName="Email" />
+              </div>
+              <div class="slds-col slds-size_1-of-2">
+                <lightning:inputField fieldName="MobilePhone" />
+              </div>
+            </div>
+            <br />
+            <div class="slds-grid">
+              <div class="slds-col slds-size_1-of-2">
+                <lightning:inputField
+                  fieldName="C4G_High_School_or_Organization__c"
+                />
+              </div>
+              <div class="slds-col slds-size_1-of-2">
+                <lightning:inputField fieldName="Description" />
+              </div>
+            </div>
+
+            <br />
+            <div class="slds-grid">
+              <div class="slds-col slds-size_1-of-2">
+                <lightning:inputField fieldName="MailingAddress" />
+              </div>
+              <div class="slds-col slds-size_1-of-2">
+                <lightning:inputField fieldName="Phone" />
+              </div>
+            </div>
+
+            <br />
+            <div class="slds-grid">
+              <div class="slds-col slds-size_1-of-2">
+                <lightning:inputField fieldName="LinkedIn_Profile__c" />
+              </div>
+              <div class="slds-col slds-size_1-of-2"></div>
+            </div>
+          </div>
+          <footer class="slds-modal__footer">
+            <lightning:button
+              variant="brand"
+              type="submit"
+              name="save"
+              label="Save"
+            />
+            <lightning:button
+              variant="neutral"
+              name="Cancel"
+              label="Cancel"
+              onclick="{!c.cancel}"
+            />
+          </footer>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </lightning:recordEditForm>
+  </aura:if>
+  <aura:if isTrue="{!v.ChangeImage}">
+    <c:ChangeImageInCommunity
+      parentId="{!v.parentId}"
+      ShowImageModal="{!v.ShowImageModal}"
+    />
+  </aura:if>
+</aura:component>

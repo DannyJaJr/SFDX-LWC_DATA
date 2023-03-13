@@ -1,0 +1,113 @@
+<aura:component controller="VotingLightningController">
+  <aura:attribute name="sId" type="String" />
+  <aura:attribute name="voteId" type="String" />
+  <aura:attribute name="sRecord" type="List" />
+  <aura:attribute name="showComponent" type="boolean" default="false" />
+  <aura:attribute name="academicsList" type="List" />
+  <aura:attribute name="financeList" type="List" />
+  <aura:attribute name="recommendationList" type="List" />
+  <aura:attribute name="socialList" type="List" />
+  <aura:attribute name="reviewList" type="List" />
+  <aura:attribute name="voteList" type="List" />
+
+  <aura:handler
+    name="init"
+    value="{!this}"
+    action="{!c.getApplicantInformation}"
+  />
+
+  <aura:if isTrue="{!v.showComponent}">
+    <div class="container">
+      <div
+        class="slds-grid slds-wrap slds-border_right slds-border_bottom slds-border_left"
+      >
+        <div
+          class="slds-col slds-size_4-of-6 slds-border_right"
+          style="padding-left: 17px"
+        >
+          <c:ApplicantVote sRecord="{!v.sRecord}" voteId="{!v.voteId}" />
+          <hr />
+          <div>
+            <p>Applicant Information</p>
+          </div>
+          <br />
+          <div class="">
+            <div class="slds-col slds-p-right_x-large">
+              <lightning:tabset selectedTabId="">
+                <lightning:tab label="Academics" id="Academics">
+                  <c:fieldDetailsMarkup
+                    sRecord="{!v.sRecord}"
+                    fieldList="{!v.academicsList}"
+                  />
+                </lightning:tab>
+                <lightning:tab label="Finances" id="Finances">
+                  <c:fieldDetailsMarkup
+                    sRecord="{!v.sRecord}"
+                    fieldList="{!v.financeList}"
+                  />
+                </lightning:tab>
+                <lightning:tab label="Social" id="Social">
+                  <c:fieldDetailsMarkup
+                    sRecord="{!v.sRecord}"
+                    fieldList="{!v.recommendationList}"
+                  />
+                </lightning:tab>
+                <lightning:tab label="Recs" id="Recs">
+                  <c:fieldDetailsMarkup
+                    sRecord="{!v.sRecord}"
+                    fieldList="{!v.socialList}"
+                  />
+                </lightning:tab>
+                <lightning:tab label="Reviews" id="Reviews">
+                  <!-- <c:fieldDetailsMarkup /> -->
+                  <c:fieldDetailsMarkup
+                    sRecord="{!v.sRecord}"
+                    fieldList="{!v.reviewList}"
+                  />
+                </lightning:tab>
+                <lightning:tab label="Files" id="Files">
+                  <aura:iteration
+                    items="{!v.sRecord[0].ContentDocumentLinks}"
+                    var="att"
+                  >
+                    <div
+                      class="slds-form__item"
+                      role="listitem"
+                      style="min-width: 100%; padding-top: 10px"
+                    >
+                      <div
+                        class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent"
+                      >
+                        <span class="slds-form-element__label">
+                          <a
+                            target="_blank"
+                            href="{! '/sfc/servlet.shepherd/version/download/' + att.ContentDocument.LatestPublishedVersionId }"
+                            title="View"
+                            style="font-size: 10pt"
+                            >{!att.ContentDocument.Title}</a
+                          >
+                        </span>
+                      </div>
+                    </div>
+                  </aura:iteration>
+                </lightning:tab>
+              </lightning:tabset>
+            </div>
+          </div>
+        </div>
+        <div
+          class="slds-col slds-size_2-of-6 container"
+          style="padding-left: 17px"
+        >
+          <br />
+          <p>Applicant Summary ::</p>
+          <br />
+          <c:fieldDetailsMarkup
+            sRecord="{!v.sRecord}"
+            fieldList="{!v.voteList}"
+          />
+        </div>
+      </div>
+    </div>
+  </aura:if>
+</aura:component>

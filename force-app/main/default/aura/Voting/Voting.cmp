@@ -1,0 +1,178 @@
+<aura:component
+  implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes"
+  controller="VotingLightningController"
+  access="global"
+>
+  <aura:attribute name="scholarRecord" type="List" />
+  <aura:attribute name="openVotes" type="List" />
+  <aura:attribute name="closedVotes" type="List" />
+  <aura:attribute
+    name="votingFor"
+    type="String"
+    default="Voting is currently disabled"
+  />
+  <aura:attribute name="isLoaded" type="boolean" default="false" />
+  <aura:attribute name="showAcademcis" type="boolean" default="false" />
+
+  <aura:attribute name="voteId" type="String" />
+  <aura:attribute name="sId" type="String" />
+  <aura:attribute name="academicsList" type="List" />
+  <aura:attribute name="financeList" type="List" />
+  <aura:attribute name="recommendationList" type="List" />
+  <aura:attribute name="socialList" type="List" />
+  <aura:attribute name="reviewList" type="List" />
+  <aura:attribute name="voteList" type="List" />
+
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <aura:handler
+    name="componentRefresh"
+    event="c:refreshEvent"
+    action="{!c.doInit}"
+  />
+
+  <aura:html tag="style">
+    .slds-tabs_default__item{ color: rgb(107, 109, 112); position: relative;
+    padding: 0 1.00rem; margin-bottom: -1px; }
+    .slds-tabs_default__item.slds-is-active .slds-tabs_default__link{
+    font-weight: 700; } .slds-tabs_default__item.slds-is-active
+    .slds-tabs_default__link { font-weight: 700; font-size: 1.0rem; }
+    .slds-template_default{ padding:0px; } table { font-family: arial,
+    sans-serif; border-collapse: collapse; width: 100%; margin-top: 15px; } td,
+    th { border: 0px solid #dddddd; text-align: left; padding: 8px; } hr {
+    margin: 0px; padding : 10px 0px 10px 0px; }
+  </aura:html>
+
+  <aura:if isTrue="{!v.isLoaded}">
+    <div class="headerContainer">
+      <div>
+        <div>
+          <div
+            class="slds-border_bottom slds-border_right slds-border_left slds-border_top"
+          >
+            <div class="slds-grid slds-wrap">
+              <div class="slds-col slds-size_4-of-6 slds-border_right">
+                <div class="containerpadding">
+                  <p>Applicants to Review</p>
+                  <aura:if isTrue="{!not(empty(v.openVotes))}">
+                    <div class="">
+                      <table class="containerpadding">
+                        <thead class="votehead">
+                          <th class="" scope="col">
+                            <div class="slds-truncate" title="fullName">
+                              Full Name
+                            </div>
+                          </th>
+                          <th class="" scope="col">
+                            <div class="slds-truncate" title="Region">
+                              Region
+                            </div>
+                          </th>
+                          <th class="" scope="col">
+                            <div class="slds-truncate" title="Rating">
+                              Rating
+                            </div>
+                          </th>
+                        </thead>
+                        <tbody>
+                          <aura:iteration items="{!v.openVotes}" var="item">
+                            <tr class="slds-hint-parent votetr">
+                              <th>
+                                <a
+                                  href="javascript:void(0)"
+                                  name="{!item.Application__c}"
+                                  onclick="{!c.doSomething}"
+                                  >{!item.Application__r.Applicant_Full_Name__c}</a
+                                >
+                              </th>
+                              <th>{!item.Application__r.Region__c}</th>
+                              <th>{!item.Scholar__r.Personal_Rating__c}</th>
+                            </tr>
+                          </aura:iteration>
+                        </tbody>
+                      </table>
+                    </div>
+                    <aura:set attribute="else">
+                      <div class="containerpadding">
+                        You have no applications awaiting review.
+                      </div>
+                    </aura:set>
+                  </aura:if>
+                </div>
+              </div>
+              <div class="slds-col slds-size_2-of-6">
+                <div class="containerpadding">
+                  <p>Reviewed Applicants</p>
+                  <aura:if isTrue="{!not(empty(v.closedVotes))}">
+                    <div>
+                      <table class="">
+                        <thead>
+                          <tr class="slds-line-height_reset">
+                            <th class="" scope="col">
+                              <div class="slds-truncate" title="fullName">
+                                Full Name
+                              </div>
+                            </th>
+                            <th class="" scope="col">
+                              <div class="slds-truncate" title="Region">
+                                Region
+                              </div>
+                            </th>
+                            <th class="" scope="col">
+                              <div class="slds-truncate" title="Rating">
+                                Rating
+                              </div>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <aura:iteration items="{!v.closedVotes}" var="item">
+                            <tr class="slds-hint-parent votetr">
+                              <th>
+                                <a
+                                  href="javascript:void(0)"
+                                  name="{!item.Application__c}"
+                                  onclick="{!c.doSomething}"
+                                  >{!item.Application__r.Applicant_Full_Name__c}</a
+                                >
+                                <!--    <a href="javascript:void(0)" name="{!item.Application__c}">Abc</a>    -->
+                              </th>
+                              <th>{!item.Application__r.Region__c}</th>
+                              <th>{!item.Scholar__r.Personal_Rating__c}</th>
+                            </tr>
+                          </aura:iteration>
+                        </tbody>
+                      </table>
+                    </div>
+                  </aura:if>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aura:if isTrue="{!v.showAcademcis}">
+        <c:ApplicantInformation
+          sId="{!v.sId}"
+          academicsList="{!v.academicsList}"
+          financeList="{!v.financeList}"
+          recommendationList="{!v.recommendationList}"
+          socialList="{!v.socialList}"
+          reviewList="{!v.reviewList}"
+          voteList="{!v.voteList}"
+        />
+      </aura:if>
+
+      <aura:set attribute="else">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+          <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_small">
+              <span class="slds-assistive-text">Loading</span>
+              <div class="slds-spinner__dot-a"></div>
+              <div class="slds-spinner__dot-b"></div>
+            </div>
+          </div>
+        </div>
+      </aura:set>
+    </div>
+  </aura:if>
+</aura:component>

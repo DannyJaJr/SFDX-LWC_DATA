@@ -1,0 +1,8 @@
+.THIS {
+}
+.THIS .spinclass {
+  position: relative;
+}
+.THIS .spin {
+  background-color: rgba(0, 0, 0, 0.1);
+}

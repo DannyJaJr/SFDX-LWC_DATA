@@ -1,0 +1,63 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" controller="PopUpMeetingContactId" access="global" >
+    <aura:attribute name="hideModal" type="boolean" default="true"/>
+    <aura:if isTrue="{!v.hideModal}">
+    <lightning:recordEditForm   
+                               aura:id="myform"
+                              onsubmit="{!c.handleSubmit}"
+                              onsuccess="{!c.handleSuccess}"
+                              onerror="{!c.handleOnError}"
+                              objectApiName="Meeting_Request__c">
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.cancel}">
+                        <lightning:icon iconName="utility:close" size="medium" variant="bare"/>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate"><b>Request A Meeting</b></h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    
+                    <lightning:inputField fieldName="Meeting_Purpose__c" required="true"/>
+                    <lightning:inputField fieldName="More_Details_Optional__c"/>
+                    <lightning:inputField fieldName="What_would_you_like__c"/>
+                    <lightning:inputField fieldName="For_How_Long__c"/>
+                    
+                    Availability(please give your availablity on three days)
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_2-of-4">
+                            <span><lightning:inputField fieldName="Preferred_Date__c" required="true"/></span>
+                        </div>
+                        <div class="slds-col slds-size_2-of-4">
+                            <span><lightning:inputField fieldName="What_time1__c"/></span>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_2-of-4">
+                            <span><lightning:inputField fieldName="Alternate_Date_1__c"/></span>
+                        </div>
+                        <div class="slds-col slds-size_2-of-4">
+                            <span><lightning:inputField fieldName="What_time2__c"/></span>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_2-of-4">
+                            <span><lightning:inputField fieldName="Alternate_Date_2__c"/></span>
+                        </div>
+                        <div class="slds-col slds-size_2-of-4">
+                            <span><lightning:inputField fieldName="What_time3__c"/></span>
+                        </div>
+                    </div>
+                    
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button  variant="brand" type="submit" name="save" label="Save" />
+                    <lightning:button  variant="neutral"  name="Cancel" label="Cancel" onclick="{!c.cancel}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>    
+    </lightning:recordEditForm>
+    </aura:if>
+    
+</aura:component>

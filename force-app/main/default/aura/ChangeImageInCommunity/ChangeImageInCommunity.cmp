@@ -1,0 +1,85 @@
+<aura:component
+  controller="FileUploadController"
+  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+  access="global"
+>
+  <aura:attribute name="parentId" type="Id" />
+  <aura:attribute name="showLoadingSpinner" type="boolean" default="false" />
+  <aura:attribute name="fileName" type="String" default="No File Selected.." />
+  <aura:attribute name="method" type="Aura.action" />
+  <aura:attribute name="ShowImageModal" type="boolean" />
+  <aura:registerEvent name="ImageRender" type="c:ImageReRenderCommunity" />
+  <!--Attribute Section End-->
+
+  <aura:if isTrue="{!v.ShowImageModal}">
+    <section
+      role="dialog"
+      tabindex="-1"
+      class="slds-modal slds-fade-in-open slds-modal_small"
+      aria-labelledby="modal-heading-01"
+      aria-modal="true"
+      aria-describedby="modal-content-id-1"
+    >
+      <div class="slds-modal__container">
+        <header class="slds-modal__header">
+          <button
+            class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+            title="Close"
+            onclick="{!c.cancel}"
+          >
+            <lightning:icon
+              iconName="utility:close"
+              size="medium"
+              variant="bare"
+            />
+            <span class="slds-assistive-text">Close</span>
+          </button>
+          <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+            Upload Image
+          </h2>
+        </header>
+        <div
+          class="slds-modal__content slds-p-around_medium"
+          id="modal-content-id-1"
+        >
+          <center>
+            <lightning:input
+              aura:id="fileId"
+              onchange="{!c.handleFilesChange}"
+              type="file"
+              accept=".png,.jpg,jpeg"
+              name="file"
+              label="Choose Image"
+              multiple="false"
+            />
+            <div class="slds-text-body_small slds-text-color_error">
+              {!v.fileName}
+            </div>
+
+            <!--use aura:if for show-hide the loading spinner image-->
+            <aura:if isTrue="{!v.showLoadingSpinner}">
+              <div class="slds-text-body_small slds-text-color_error">
+                Uploading...
+                <img
+                  src="/auraFW/resources/aura/images/spinner.gif"
+                  class="spinner-img"
+                  alt="Loading"
+                />'
+              </div>
+            </aura:if>
+            <br />
+          </center>
+        </div>
+        <footer class="slds-modal__footer">
+          <button class="slds-button slds-button_neutral" onclick="{!c.cancel}">
+            Cancel
+          </button>
+          <button class="slds-button slds-button_brand" onclick="{!c.doSave}">
+            Upload
+          </button>
+        </footer>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </aura:if>
+</aura:component>

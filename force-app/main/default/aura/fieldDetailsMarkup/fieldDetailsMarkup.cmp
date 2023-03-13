@@ -1,0 +1,46 @@
+<aura:component>
+  <aura:attribute name="sRecord" type="Scholar__c" />
+  <aura:attribute name="fieldList" type="List" />
+  <aura:attribute name="scholars" type="List" />
+
+  <aura:handler name="init" value="{!this}" action="{!c.onInit}" />
+  <!--
+    <div class="slds-form" role="list">
+        <div class="slds-form__row">
+            <aura:iteration items="{!v.scholars}" var="type">  
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                        <span class="slds-form-element__label">{!type.label}</span>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__static">
+                                {!type.value}
+                            </div>
+                        </div>
+                    </div>                                
+                </div>  
+            </aura:iteration>
+        </div>
+    </div>   
+    -->
+  <lightning:layout horizontalAlign="spread" multipleRows="true">
+    <aura:iteration items="{!v.scholars}" var="type">
+      <lightning:layoutItem size="6">
+        <lightning:layout horizontalAlign="spread" multipleRows="true">
+          <lightning:layoutItem
+            size="12"
+            class="slds-p-left_small slds-p-right_small"
+          >
+            <div
+              class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent"
+            >
+              <span class="slds-form-element__label">{!type.label}</span>
+              <div class="slds-form-element__control">
+                <div class="slds-form-element__static">{!type.value}</div>
+              </div>
+            </div>
+          </lightning:layoutItem>
+        </lightning:layout>
+      </lightning:layoutItem>
+    </aura:iteration>
+  </lightning:layout>
+</aura:component>

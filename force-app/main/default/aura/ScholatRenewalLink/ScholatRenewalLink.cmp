@@ -1,0 +1,23 @@
+<aura:component
+  controller="ScholarRenewalLinkController"
+  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+  access="global"
+>
+  <aura:attribute name="RenewalLink" type="String" />
+  <aura:handler name="init" action="{!c.doinit}" value="{!this}" />
+  <aura:if isTrue="{!v.RenewalLink}">
+    <iframe
+      src="{!v.RenewalLink}"
+      width="100%"
+      height="900px;"
+      style="border: 0px"
+    />
+    <aura:set attribute="else">
+      <header class="slds-modal__header">
+        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+          <b>No Renewal Form Available!</b>
+        </h2>
+      </header>
+    </aura:set>
+  </aura:if>
+</aura:component>

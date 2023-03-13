@@ -1,0 +1,19 @@
+.THIS {
+    background-color: white;
+    padding: 0px 10px 0px 20px;    
+    font-family: 'Salesforce Sans',Arial,sans-serif;
+}
+.THIS.container {
+    width : 611px;
+}
+.THIS .slds-form-element{
+    min-width : 50%;
+    height: 95px;
+}
+.THIS .uiInputSelect{
+        min-width: 50%;
+}
+.THIS .slds-textarea{
+    height:62px;
+    min-width:200px;
+}

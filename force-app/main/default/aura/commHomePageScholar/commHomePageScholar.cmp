@@ -1,0 +1,51 @@
+<aura:component
+  controller="ScholarData"
+  implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes"
+  access="global"
+>
+  <aura:handler name="init" action="{!c.doinit}" value="{!this}" />
+  <aura:attribute name="Scholar" type="Scholar__c" />
+  <header class="slds-modal__header">
+    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+      <b>Your Scholar Details</b>
+    </h2>
+  </header>
+  <div class="slds-modal__content slds-p-around_medium">
+    <table
+      class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered"
+    >
+      <thead>
+        <tr class="slds-line-height_reset">
+          <th class="" scope="col">
+            <div class="slds-truncate" title="Name">Name</div>
+          </th>
+          <th class="" scope="col">
+            <div class="slds-truncate" title="Region">Region</div>
+          </th>
+          <th class="" scope="col">
+            <div class="slds-truncate" title="Contact">Contact</div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="slds-hint-parent">
+          <td data-label="Account Name">
+            <div class="slds-truncate" title="{!v.Scholar.Name}">
+              {!v.Scholar.Name}
+            </div>
+          </td>
+          <td data-label="Account Name">
+            <div class="slds-truncate" title="{!v.Scholar.Region__c}">
+              {!v.Scholar.Region__c}
+            </div>
+          </td>
+          <td data-label="Account Name">
+            <div class="slds-truncate" title="{!v.Scholar.Contact__r.Name}">
+              {!v.Scholar.Contact__r.Name}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</aura:component>

@@ -1,0 +1,99 @@
+<aura:component
+  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+  controller="MeetingRequestController"
+  access="global"
+>
+  <aura:attribute name="meetingHistory" type="List" />
+  <aura:attribute name="ShowPop" type="boolean" default="false" />
+  <aura:attribute name="hideModal" type="boolean" default="true" />
+
+  <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+
+  <aura:html tag="style">
+    table { border-collapse: collapse; width: 100%; } th, td { text-align: left;
+    padding: 8px; } tr:nth-child(even){background-color: rgba(57, 116, 169,
+    0.08)} th { background-color: #4CAF50; color: white; }
+  </aura:html>
+
+  <div class="slds-box">
+    <center>
+      <div class="box1">
+        <h2>Here is where you can request a meeting with a staff member.</h2>
+      </div>
+    </center>
+
+    <div class="inlineDivElements">
+      <b>Meeting Request</b>
+      <lightning:layout multipleRows="true" horizontalAlign="center">
+        <lightning:layoutItem
+          padding="around-small"
+          flexibility="auto"
+          size="2"
+        >
+          <lightning:button
+            class="slds-size_full"
+            variant="brand"
+            label="Request A Meeting"
+            title="Request A Meeting"
+            onclick="{!c.ShowPopUp }"
+          />
+        </lightning:layoutItem>
+      </lightning:layout>
+      <aura:if isTrue="{!v.ShowPop}">
+        <c:PopUpMeetingRequest hideModal="{!v.hideModal}" />
+      </aura:if>
+      <hr />
+    </div>
+
+    {!v.meetingHistory}
+
+    <aura:if isTrue="{!not(empty(v.meetingHistory))}">
+      <center>
+        <header class="header1">
+          <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+            <b>Meeting History</b>
+          </h2>
+        </header>
+      </center>
+      <table
+        class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered"
+      >
+        <thead class="ForColor">
+          <tr class="slds-line-height_reset">
+            <th class="color" scope="col">
+              <div class="slds-truncate" title="Opportunity Name">Date</div>
+            </th>
+            <th class="color" scope="col">
+              <div class="slds-truncate" title="Account Name">Staff</div>
+            </th>
+
+            <th class="color" scope="col">
+              <div class="slds-truncate" title="Close Date">Purpose</div>
+            </th>
+            <th class="color" scope="col">
+              <div class="slds-truncate" title="Close Date">Status</div>
+            </th>
+            <th class="color" scope="col">
+              <div class="slds-truncate" title="Close Date">Department</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <aura:iteration items="{!v.meetingHistory}" var="item">
+            <tr>
+              <td>{!item.Preferred_Date__c}</td>
+              <td>{!item.What_would_you_like__c}</td>
+              <td>{!item.Description__c }</td>
+              <td>{!item.Status__c}</td>
+              <td>N/A</td>
+            </tr>
+          </aura:iteration>
+        </tbody>
+      </table>
+
+      <aura:set attribute="else">
+        <h2>No meeting history found...</h2>
+      </aura:set>
+    </aura:if>
+  </div>
+</aura:component>

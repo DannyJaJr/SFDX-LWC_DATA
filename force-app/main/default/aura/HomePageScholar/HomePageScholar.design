@@ -1,0 +1,3 @@
+<design:component label="Scholar home page">
+	<design:attribute name="Greet" label="Banner Message" description="Name of the person you want to greet" />
+</design:component>

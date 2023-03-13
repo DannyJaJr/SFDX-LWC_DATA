@@ -1,0 +1,55 @@
+.THIS {
+  background-color: white;
+  padding: 15px 10% 0px 10%;
+  font-family: "Salesforce Sans", Arial, sans-serif;
+  min-height: 768px;
+}
+.THIS .headerContainer {
+  min-height: 768px;
+}
+.THIS .appTable {
+  padding-top: 10px;
+}
+.THIS .container {
+  padding-top: 0px;
+}
+.THIS p {
+  font-size: 1rem;
+  font-weight: bolder;
+  padding-left: 11px;
+  letter-spacing: 1px;
+}
+.THIS .MainContainer {
+  padding: 11px 11px 11px 11px;
+}
+.THIS .header1 {
+  padding-top: 15px;
+}
+.THIS .votingheader {
+  padding: 25px 0px 0px 0px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.THIS .votehead {
+  border-bottom: 1px solid #e0d6d6;
+}
+.THIS .votetr {
+  font-size: 0.7rem;
+  font-weight: lighter;
+  color: #795c5c;
+  border-bottom: 1px solid #e0d6d6;
+}
+.THIS .slds-button {
+  background-color: transparent;
+  border: none;
+  color: #1c87c9;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+.THIS .containerpadding {
+  padding: 10px 10px 10px 10px;
+}
+.THIS .containerpadding_medium {
+  padding: 15px 10px 15px 10px;
+}
