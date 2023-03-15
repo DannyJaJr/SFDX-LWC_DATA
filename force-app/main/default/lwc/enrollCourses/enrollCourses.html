@@ -1,3 +1,22 @@
 <template>
-    <lightning-button label="Enroll in Course" variant="brand" onclick={enrollInCourse}></lightning-button>
-  </template>
+  <lightning-card title="Enrollment List">
+      <div class="slds-m-around_medium">
+          <lightning-datatable
+              key-field="Id"
+              data={enrollments}
+              columns={columns}
+              onrowaction={handleRowAction}>
+          </lightning-datatable>
+      </div>
+  </lightning-card>
+
+
+
+  <lightning-button label="Create Enrollment" onclick={createNewEnrollment}></lightning-button>
+
+<lightning-input-field
+    data-field="Course_Version__c"
+    field-name="Course Version"
+>
+</lightning-input-field>
+</template>
